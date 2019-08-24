@@ -29,6 +29,7 @@ class Routes
         self::addRoute($routes, '/admin/managelinks/statistics{t</>}{id}', AdminLinksController::class, "linkStatistics");
         self::addRoute($routes, '/view/{id}', ViewController::class, "view");
         self::addRoute($routes, '/stream/', StreamingController::class, "stream");
+        self::addRoute($routes, '/streaming/', StreamingController::class, "update");
 
     }
 

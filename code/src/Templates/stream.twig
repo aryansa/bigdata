@@ -23,7 +23,7 @@
 
     {#<html>#}
     {#<body>#}
-    <form method="get" action="/stream/">
+    <form id="form" method="get" action="/streaming/">
         <div class="form-group col-6">
             <label for="exampleFormControlSelect1">Select company id</label>
             <select class="form-control " name="companyId" id="companyId">
@@ -32,7 +32,7 @@
                 {% endfor %}
             </select>
         </div>
-        <button type="submit" name="getcompany" class="btn btn-primary mb-2">stream</button>
+        <button type="submit" id="submitbtn" name="getcompany" class="btn btn-primary mb-2">stream</button>
     </form>
 
     {% for log in logs %}
@@ -48,9 +48,128 @@
         -------------------
         <br>
     {% endfor %}
-    <button id="select"></button>
+    <button id="onmap">onmap</button>
 
-    <div id="map" style="height:250px"></div>
-
-
+    {#<div id="map" style="height:250px"></div>#}
+    <div style="height: 1000px" id="map"></div>
 {% endblock %}
+
+    {% block scripts %}
+        <script>
+            var map;
+            var adonmarker = new Array();
+
+            function initMap() {
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 51.5715637, lng: 35.7275962},
+                    zoom: 6
+                });
+
+            }
+
+            $('document').ready(function () {
+
+
+                $('#onmap').click(function () {
+                    // alert("okay");
+                    // adonmarker[0] = new google.maps.Marker({
+                    //     position: map.getCenter(),
+                    //     icon: {
+                    //         path: google.maps.SymbolPath.CIRCLE,
+                    //         scale: 10
+                    //     },
+                    //     draggable: true,
+                    //     map: map
+                    // });
+                    $.ajax({
+                        type: 'get',
+                        url: "/streaming/",
+                        data: {companyId: 1},
+                        beforeSend: function () {
+
+                        },
+                        success: function (response) {
+
+                            var json = JSON.parse(response);
+                            console.log(json[0]);
+                            if (adonmarker.length > 0) {
+                                for (let i = 0; i < adonmarker.length; i++) {
+                                    adonmarker[i].setMap(null);
+                                }
+                            }
+                            var jsonData = response;
+
+
+                            for (var i = 0; i < json.length; i++) {
+                                myLatLng = {
+                                    lat: json[i].lat,
+                                    lng: json[i].lng
+                                };
+                                adonmarker[i] = new google.maps.Marker({
+                                    position: myLatLng,
+                                    map: map,
+                                    icon: {
+                                        path: google.maps.SymbolPath.CIRCLE,
+                                        scale: 10
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+                })
+
+            });
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
+                async defer></script>
+        {#<script>#}
+        {#var x = false;#}
+
+        {#$('document').ready(function () {#}
+        {#// $('#onmap').click(function () {#}
+        {#$("#srco").attr("src", "https://maps.googleapis.com/maps/api/js?callback=initMap");#}
+        {#// $.ajax({#}
+        {#//     type: 'get',#}
+        {#//     url: "https://earthquake.usgs.gov/fdsnws/event/1/query",#}
+        {#//     data: {format: 'geojson', starttime: 'NOW - 7 days'},#}
+        {#//     beforeSend: function () {#}
+        {#//         $("#id").html('<span class="glyphicon glyphicon-transfer"></span> &nbsp; sending ...');#}
+        {#//     },#}
+        {#//     success: function (response) {#}
+        {#//         console.log(response.features);#}
+        {#//         var jsonData = response;#}
+        {#//#}
+        {#//         for (var i = 0; i < jsonData.features.length; i++) {#}
+        {#//#}
+        {#//             lng[i] = jsonData.features[i].geometry.coordinates[0];#}
+        {#//             lat[i] = jsonData.features[i].geometry.coordinates[1];#}
+        {#//         }#}
+        {#//         $("#srco").attr("src", "https://maps.googleapis.com/maps/api/js?callback=initMap");#}
+        {#//#}
+        {#//     }#}
+        {#// });#}
+        {#// });#}
+        {#});#}
+
+        {#function initMap() {#}
+        {#var myLatLng = {lat: 35.6973445, lng: 51.3404033};#}
+
+
+        {#var map = new google.maps.Map(document.getElementById('map'), {#}
+        {#zoom: 10,#}
+        {#center: myLatLng#}
+        {#});#}
+
+        {#myLatLng = {lat: 35.6973441, lng: 51.3404030};#}
+        {#new google.maps.Marker({#}
+        {#position: myLatLng,#}
+        {#map: map,#}
+        {#title: 'Hello World!'#}
+        {#})#}
+        {#}#}
+
+        {#</script>#}
+        {#<script id="srco"></script>#}
+    {% endblock %}

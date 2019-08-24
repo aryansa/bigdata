@@ -22,6 +22,6 @@ class AdminAccountView
             return new GuestAccount();
         }
 
-        return new AdminAccount($userData[$id]['id'], $userData[$id]['mail'], $userData[$id]['password']);
+        return new AdminAccount($userData[$id]['id'], $userData[$id]['username'], $userData[$id]['password']);
     }
 }
